@@ -91,6 +91,12 @@ npm run dev
 
 `backend/render.yaml` を使用してバックエンドをWeb Serviceとしてデプロイできます。フロントエンドはStatic Siteとして別途デプロイし、`VITE_API_BASE_URL` にバックエンドのURLを設定してください。バックエンド側の `ALLOWED_ORIGINS` にはフロントエンドの本番URLを設定してください。
 
+## 📺 デモ
+![デモ](docs/demo.gif)
+
+## 🖼 スクリーンショット
+![ダッシュボード](docs/dashboard.png)
+
 ## 主な機能
 
 - 複数ホストへの定期ping監視（10〜3600秒で間隔設定可能）
