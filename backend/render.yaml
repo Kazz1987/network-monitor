@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: network-monitor-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        value: sqlite:///./network_monitor.db
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: DEFAULT_PING_INTERVAL_SECONDS
+        value: "60"
+      - key: MIN_PING_INTERVAL_SECONDS
+        value: "10"
+      - key: MAX_PING_INTERVAL_SECONDS
+        value: "3600"
+      - key: HISTORY_RETENTION_HOURS
+        value: "24"
+      - key: PING_TIMEOUT_SECONDS
+        value: "2.0"
