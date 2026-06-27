@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     MAX_PING_INTERVAL_SECONDS: int = 3600
     HISTORY_RETENTION_HOURS: int = 24
     PING_TIMEOUT_SECONDS: float = 2.0
+    SLACK_WEBHOOK_URL: str = ""
 
     @property
     def allowed_origins_list(self) -> list[str]:

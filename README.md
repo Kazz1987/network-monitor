@@ -4,7 +4,7 @@
 
 ## 構成
 
-- **Backend**: Python 3.11 / FastAPI / SQLAlchemy / SQLite / ping3 / APScheduler
+- **Backend**: Python 3.11 / FastAPI / SQLAlchemy / SQLite / ping3 / APScheduler / httpx
 - **Frontend**: React 18 / Vite / Recharts / Axios
 - **Deploy**: Render（バックエンド・フロントエンド分離構成）
 
@@ -12,8 +12,25 @@
 
 ```
 network-monitor/
-├── backend/        FastAPIアプリケーション
-└── frontend/       Reactアプリケーション
+├── backend/
+│   └── app/
+│       ├── core/           設定・セキュリティ
+│       ├── routers/
+│       │   ├── ports.py    ポート監視API
+│       │   └── ssl.py      SSL証明書API
+│       └── services/
+│           ├── port_checker.py     TCPポート疎通確認
+│           ├── ssl_checker.py      SSL証明書取得
+│           └── slack_notifier.py   Slack通知（クールダウン管理）
+└── frontend/
+    └── src/
+        ├── components/
+        │   ├── PortMonitorPanel.jsx  ポート監視パネル
+        │   ├── SslPanel.jsx          SSL証明書パネル
+        │   └── WelcomeModal.jsx      ウェルカムモーダル
+        └── hooks/
+            ├── usePorts.js   ポートAPI呼び出し
+            └── useSsl.js     SSL API呼び出し
 ```
 
 ## セットアップ
@@ -57,6 +74,19 @@ npm run dev
 | `MAX_PING_INTERVAL_SECONDS` | 監視間隔の最大値 | `3600` |
 | `HISTORY_RETENTION_HOURS` | 履歴データの保持時間 | `24` |
 | `PING_TIMEOUT_SECONDS` | ping1回あたりのタイムアウト | `2.0` |
+| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL（省略時は通知無効） | `` |
+
+#### Slack通知の設定方法
+
+1. [Slack API](https://api.slack.com/apps) でアプリを作成し、Incoming Webhook を有効化する
+2. 生成された Webhook URL を `SLACK_WEBHOOK_URL` に設定する
+3. 以下のイベントで自動通知されます（クールダウン期間中は再送しません）
+
+| 通知種別 | 条件 | クールダウン |
+|---|---|---|
+| ホストダウン | pingが失敗 | 1時間 |
+| ポートダウン | TCP接続が失敗 | 1時間（ポートごと） |
+| SSL期限警告 | 残り30日以下（残り7日以下は緊急扱い） | 24時間 |
 
 ### frontend/.env
 
@@ -83,6 +113,10 @@ npm run dev
 | DELETE | `/api/hosts/{id}` | ホスト削除 |
 | GET | `/api/hosts/{id}/metrics` | 応答時間履歴取得（直近24時間） |
 | POST | `/api/hosts/{id}/ping` | 手動ping実行 |
+| GET | `/api/hosts/{id}/ports` | ポート監視一覧取得 |
+| POST | `/api/hosts/{id}/ports` | ポート監視登録 |
+| DELETE | `/api/hosts/{id}/ports/{port_id}` | ポート監視削除 |
+| GET | `/api/hosts/{id}/ssl` | SSL証明書情報取得 |
 | GET | `/api/settings` | 監視設定取得 |
 | PUT | `/api/settings` | 監視設定更新 |
 | GET | `/health` | ヘルスチェック |
@@ -107,3 +141,7 @@ npm run dev
 - 手動ping実行
 - ping3が利用できない環境ではsubprocess（pingコマンド）にフォールバック
 - 履歴データは直近24時間分のみ保持し、古いデータは自動削除
+- **ポート監視**: ホストごとにTCPポートを複数登録し、開閉状態をリアルタイム表示
+- **SSL証明書チェック**: 毎日09:00 UTC自動チェック、残り日数・有効期限をダッシュボードに表示
+- **Slack通知**: ホストダウン・ポートダウン・SSL期限30日以下を検知したときにSlack通知（クールダウン付き）
+- **ウェルカムモーダル**: 初回アクセス時にポートフォリオ説明ポップアップを表示

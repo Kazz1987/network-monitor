@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
 from app.database import init_db
-from app.routers import hosts, metrics, settings as settings_router
+from app.routers import hosts, metrics, ports, ssl, settings as settings_router
 from app.services.scheduler import shutdown_scheduler, start_scheduler
 
 settings = get_settings()
@@ -63,6 +63,8 @@ async def security_headers_middleware(request: Request, call_next):
 
 app.include_router(hosts.router)
 app.include_router(metrics.router)
+app.include_router(ports.router)
+app.include_router(ssl.router)
 app.include_router(settings_router.router)
 
 

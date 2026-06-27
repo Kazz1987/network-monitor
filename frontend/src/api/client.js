@@ -15,6 +15,16 @@ export const hostsApi = {
   metrics: (hostId) => client.get(`/api/hosts/${hostId}/metrics`).then((res) => res.data),
 };
 
+export const portsApi = {
+  list: (hostId) => client.get(`/api/hosts/${hostId}/ports`).then((res) => res.data),
+  create: (hostId, payload) => client.post(`/api/hosts/${hostId}/ports`, payload).then((res) => res.data),
+  remove: (hostId, portId) => client.delete(`/api/hosts/${hostId}/ports/${portId}`),
+};
+
+export const sslApi = {
+  get: (hostId) => client.get(`/api/hosts/${hostId}/ssl`).then((res) => res.data),
+};
+
 export const settingsApi = {
   get: () => client.get("/api/settings").then((res) => res.data),
   update: (payload) => client.put("/api/settings", payload).then((res) => res.data),

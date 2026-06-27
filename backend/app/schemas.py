@@ -8,6 +8,8 @@ from app.core.config import get_settings
 from app.core.security import InvalidTargetError, PrivateAddressError, validate_target
 from app.models import PingStatus
 
+_DESCRIPTION_RE = re.compile(r"^[\w\s.\-/()#]{0,200}$", re.UNICODE)
+
 settings = get_settings()
 
 _NAME_RE = re.compile(r"^[\w\s.\-]{1,100}$", re.UNICODE)
@@ -84,3 +86,42 @@ class MonitorSettingUpdate(BaseModel):
         ge=settings.MIN_PING_INTERVAL_SECONDS,
         le=settings.MAX_PING_INTERVAL_SECONDS,
     )
+
+
+class PortMonitorCreate(BaseModel):
+    port: int = Field(..., ge=1, le=65535)
+    description: str | None = Field(None, max_length=200)
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        if not _DESCRIPTION_RE.match(value):
+            raise ValueError("説明に使用できない文字が含まれています")
+        return html.escape(value)
+
+
+class PortMonitorResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    host_id: int
+    port: int
+    description: str | None
+    is_active: bool
+    last_status: bool | None
+    last_checked_at: datetime | None
+
+
+class SslMonitorResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    host_id: int
+    days_until_expiry: int | None
+    expires_at: datetime | None
+    last_checked_at: datetime | None

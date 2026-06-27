@@ -29,6 +29,12 @@ class Host(Base):
     ping_results: Mapped[list["PingResult"]] = relationship(
         "PingResult", back_populates="host", cascade="all, delete-orphan"
     )
+    port_monitors: Mapped[list["PortMonitor"]] = relationship(
+        "PortMonitor", back_populates="host", cascade="all, delete-orphan"
+    )
+    ssl_monitor: Mapped["SslMonitor | None"] = relationship(
+        "SslMonitor", back_populates="host", cascade="all, delete-orphan", uselist=False
+    )
 
 
 class PingResult(Base):
@@ -41,6 +47,32 @@ class PingResult(Base):
     pinged_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
 
     host: Mapped["Host"] = relationship("Host", back_populates="ping_results")
+
+
+class PortMonitor(Base):
+    __tablename__ = "port_monitors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    host_id: Mapped[int] = mapped_column(ForeignKey("hosts.id", ondelete="CASCADE"), nullable=False, index=True)
+    port: Mapped[int] = mapped_column(Integer, nullable=False)
+    description: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_status: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    host: Mapped["Host"] = relationship("Host", back_populates="port_monitors")
+
+
+class SslMonitor(Base):
+    __tablename__ = "ssl_monitors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    host_id: Mapped[int] = mapped_column(ForeignKey("hosts.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    days_until_expiry: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    host: Mapped["Host"] = relationship("Host", back_populates="ssl_monitor")
 
 
 class MonitorSetting(Base):

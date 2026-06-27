@@ -1,5 +1,7 @@
 import { useMetrics } from "../hooks/useMetrics";
+import PortMonitorPanel from "./PortMonitorPanel";
 import ResponseChart from "./ResponseChart";
+import SslPanel from "./SslPanel";
 
 export default function HostGraphPanel({ host, onClose }) {
   const { metrics, error } = useMetrics(host?.id ?? null);
@@ -9,10 +11,12 @@ export default function HostGraphPanel({ host, onClose }) {
   return (
     <div className="graph-panel" style={styles.panel}>
       <div style={styles.header}>
-        <strong>{host.name} の応答時間</strong>
+        <strong>{host.name} の詳細</strong>
         <button onClick={onClose}>閉じる</button>
       </div>
       {error ? <p style={{ color: "#dc2626" }}>{error}</p> : <ResponseChart metrics={metrics} />}
+      <PortMonitorPanel hostId={host.id} />
+      <SslPanel hostId={host.id} />
     </div>
   );
 }

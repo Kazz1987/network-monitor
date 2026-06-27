@@ -1,5 +1,11 @@
 import Dashboard from "./components/Dashboard";
+import WelcomeModal from "./components/WelcomeModal";
 
 export default function App() {
-  return <Dashboard />;
+  return (
+    <>
+      <WelcomeModal />
+      <Dashboard />
+    </>
+  );
 }
