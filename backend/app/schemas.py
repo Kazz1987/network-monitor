@@ -1,6 +1,7 @@
 import html
 import re
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -51,9 +52,9 @@ class HostResponse(BaseModel):
     is_active: bool
     is_default: bool
     created_at: datetime
-    latest_status: PingStatus | None = None
-    latest_response_time_ms: float | None = None
-    uptime_percentage: float | None = None
+    latest_status: Optional[PingStatus] = None
+    latest_response_time_ms: Optional[float] = None
+    uptime_percentage: Optional[float] = None
 
 
 class PingResultResponse(BaseModel):
@@ -62,14 +63,14 @@ class PingResultResponse(BaseModel):
     id: int
     host_id: int
     status: PingStatus
-    response_time_ms: float | None
+    response_time_ms: Optional[float]
     pinged_at: datetime
 
 
 class ManualPingResponse(BaseModel):
     host_id: int
     status: PingStatus
-    response_time_ms: float | None
+    response_time_ms: Optional[float]
     pinged_at: datetime
 
 
@@ -90,11 +91,11 @@ class MonitorSettingUpdate(BaseModel):
 
 class PortMonitorCreate(BaseModel):
     port: int = Field(..., ge=1, le=65535)
-    description: str | None = Field(None, max_length=200)
+    description: Optional[str] = Field(None, max_length=200)
 
     @field_validator("description")
     @classmethod
-    def validate_description(cls, value: str | None) -> str | None:
+    def validate_description(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return None
         value = value.strip()
@@ -111,10 +112,10 @@ class PortMonitorResponse(BaseModel):
     id: int
     host_id: int
     port: int
-    description: str | None
+    description: Optional[str]
     is_active: bool
-    last_status: bool | None
-    last_checked_at: datetime | None
+    last_status: Optional[bool]
+    last_checked_at: Optional[datetime]
 
 
 class SslMonitorResponse(BaseModel):
@@ -122,6 +123,6 @@ class SslMonitorResponse(BaseModel):
 
     id: int
     host_id: int
-    days_until_expiry: int | None
-    expires_at: datetime | None
-    last_checked_at: datetime | None
+    days_until_expiry: Optional[int]
+    expires_at: Optional[datetime]
+    last_checked_at: Optional[datetime]

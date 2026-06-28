@@ -2,11 +2,12 @@ import logging
 import socket
 import ssl
 from datetime import datetime, timezone
+from typing import Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
 
-def check_ssl(hostname: str, timeout: float = 10.0) -> tuple[int, datetime] | None:
+def check_ssl(hostname: str, timeout: float = 10.0) -> Optional[Tuple[int, datetime]]:
     """Check SSL certificate expiry for hostname.
 
     Returns (days_remaining, expires_at) or None on connection/cert failure.

@@ -2,6 +2,7 @@ import logging
 import re
 import subprocess
 import sys
+from typing import Optional, Tuple
 
 from app.core.config import get_settings
 from app.core.security import InvalidTargetError, PrivateAddressError, validate_target
@@ -18,7 +19,7 @@ except ImportError:  # pragma: no cover - environment without ping3
 _VALID_TARGET_RE = re.compile(r"^[A-Za-z0-9.:\-]+$")
 
 
-def _ping_with_ping3(target: str, timeout: float) -> float | None:
+def _ping_with_ping3(target: str, timeout: float) -> Optional[float]:
     try:
         result = _ping3_ping(target, timeout=timeout, unit="ms")
     except Exception as exc:  # ping3 raises various OS-level errors
@@ -29,7 +30,7 @@ def _ping_with_ping3(target: str, timeout: float) -> float | None:
     return float(result)
 
 
-def _ping_with_subprocess(target: str, timeout: float) -> float | None:
+def _ping_with_subprocess(target: str, timeout: float) -> Optional[float]:
     # target is re-validated against a strict allow-list to prevent command injection.
     if not _VALID_TARGET_RE.fullmatch(target):
         return None
@@ -58,7 +59,7 @@ def _ping_with_subprocess(target: str, timeout: float) -> float | None:
     return 0.0
 
 
-def ping_target(target: str) -> tuple[PingStatus, float | None]:
+def ping_target(target: str) -> Tuple[PingStatus, Optional[float]]:
     """Ping a validated target, returning (status, response_time_ms)."""
     try:
         validate_target(target)

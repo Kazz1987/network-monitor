@@ -1,6 +1,7 @@
 import ipaddress
 import re
 import socket
+from typing import Union
 
 _HOSTNAME_RE = re.compile(
     r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*$"
@@ -15,7 +16,7 @@ class InvalidTargetError(ValueError):
     pass
 
 
-def is_private_or_reserved(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+def is_private_or_reserved(ip: Union[ipaddress.IPv4Address, ipaddress.IPv6Address]) -> bool:
     return (
         ip.is_private
         or ip.is_loopback
