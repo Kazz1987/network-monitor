@@ -126,6 +126,11 @@ npm run dev
 `backend/render.yaml` を使用してバックエンドをWeb Serviceとしてデプロイできます。フロントエンドはStatic Siteとして別途デプロイし、`VITE_API_BASE_URL` にバックエンドのURLを設定してください。バックエンド側の `ALLOWED_ORIGINS` にはフロントエンドの本番URLを設定してください。
 
 ## 📺 デモ
+
+🔗 **Live Demo（AWS EC2）**: http://32.236.41.43/
+
+サンプルデータで動作確認いただけます。
+
 ![デモ](docs/demo.gif)
 
 ## 🖼 スクリーンショット
