@@ -2,6 +2,14 @@
 
 複数のホスト（IPアドレス/ホスト名）に対して定期的にpingを実行し、UP/DOWNステータス・応答時間・稼働率をダッシュボードで可視化するアプリケーションです。
 
+## 📺 デモ
+
+🔗 **Live Demo（AWS EC2）**: http://32.236.41.43/
+
+サンプルデータで動作確認いただけます。
+
+![デモ](docs/demo.gif)
+
 ## 構成
 
 - **Backend**: Python 3.11 / FastAPI / SQLAlchemy / SQLite / ping3 / APScheduler / httpx
@@ -124,14 +132,6 @@ npm run dev
 ## Renderへのデプロイ
 
 `backend/render.yaml` を使用してバックエンドをWeb Serviceとしてデプロイできます。フロントエンドはStatic Siteとして別途デプロイし、`VITE_API_BASE_URL` にバックエンドのURLを設定してください。バックエンド側の `ALLOWED_ORIGINS` にはフロントエンドの本番URLを設定してください。
-
-## 📺 デモ
-
-🔗 **Live Demo（AWS EC2）**: http://32.236.41.43/
-
-サンプルデータで動作確認いただけます。
-
-![デモ](docs/demo.gif)
 
 ## 🖼 スクリーンショット
 ![ダッシュボード](docs/dashboard.png)
